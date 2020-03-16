@@ -3,12 +3,16 @@ import Head from 'next/head'
 import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
 
-import Nav from 'components/nav'
+import Nav from 'components/Nav'
+import Footer from 'components/Footer'
+import Container from 'components/Container'
+import Spinner from 'components/Spinner'
 
-const Wrap = styled.div`
-  width: 100%;
-  color: #333;
-`
+import Button from 'components/Button'
+import Input from 'components/Input'
+import Select from 'components/Select'
+import * as Text from 'components/Text'
+
 const Title = styled.h1`
   margin: 0;
   width: 100%;
@@ -30,9 +34,6 @@ const Row = styled.div`
   flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
-`
-const Number = styled.h1`
-  font-size: 40px;
 `
 const Card = styled.a`
   cursor: pointer;
@@ -57,42 +58,35 @@ const Card = styled.a`
     color: #333;
   }
 `
-const Button = styled.div`
-  cursor: pointer;
-  padding: 10px 30px;
-  border: 1px solid #000;
-  border-radius: 8px;
-  &:hover {
-    background: #000;
-    color: #fff;
-  }
-`
-@inject('Counter', 'Post') // *_app.js <Provider>에 넘겨준 store명과 일치해야함. *inject: 컴포넌트에서 store에 접근 가능하게 함. 해당 store에 있는 값을 컴포넌트의 props로 주입시켜줌.
+@inject('Counter', 'Post', 'Loading') // *_app.js <Provider>에 넘겨준 store명과 일치해야함. *inject: 컴포넌트에서 store에 접근 가능하게 함. 해당 store에 있는 값을 컴포넌트의 props로 주입시켜줌.
 @observer
 class Home extends React.Component {
   componentDidMount() {
     this.props.Post.getData()
   }
   render(){
-    console.log(this.props.Post.data)
-    const { Post, Counter } = this.props
+    const { Post, Counter, Loading } = this.props
     return (
       <div>
+        {Loading.is_open && <Spinner/>}
         <Head>
           <title>Home</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-
         <Nav />
-        <Wrap>
+        <Container>
           <Title>Next.js with Mobx Boilerplate</Title>
           <Description>
             To get started, edit <code>pages/index.js</code> and save to reload.
           </Description>
           <Row>
-            <Number>
+            <Text.FontSize40>
               {Counter.num}
-            </Number>
+            </Text.FontSize40>
+          </Row>
+          <Row>
+            <Input label='텍스트' placeholder='텍스트를 입력하세요'/>
+            <Select/>
           </Row>
           <Row>
             <Button onClick={Counter.increase}>+</Button>
@@ -100,9 +94,9 @@ class Home extends React.Component {
           </Row>
           <Row>
             {
-              Post.data && Post.data.map((item, idx) => {
+              Post.data && Post.data.slice(0, 12).map((item, idx) => {
                 return (
-                  <Card>
+                  <Card key={idx}>
                     <h3>{item.title}</h3>
                     <p>{item.body}</p>
                   </Card>
@@ -110,7 +104,8 @@ class Home extends React.Component {
               })
             }
           </Row>
-        </Wrap>
+        </Container>
+        <Footer/>
       </div>
     )
   }

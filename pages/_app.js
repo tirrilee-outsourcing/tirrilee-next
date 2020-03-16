@@ -1,8 +1,10 @@
 import React from 'react'
-import App, { Container } from 'next/app'
+import App from 'next/app'
+// import { Head } from 'next/document'
 import { Provider } from 'mobx-react'
 import { createGlobalStyle } from 'styled-components'
 
+import ScrollToTop from 'components/ScrollToTop'
 import stores from 'stores'
 
 // CSS Reset Code
@@ -53,25 +55,20 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 class MyApp extends App {
-  static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
-    return { pageProps };
+  componentDidMount() {
+    const jssStyles = document.querySelector('#jss-server-side')
+    if (jssStyles && jssStyles.parentNode)
+      jssStyles.parentNode.removeChild(jssStyles)
   }
-
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <Provider {...stores}>
-        <Container>
-          <GlobalStyle />
-          <title>Tirrilee Bolierplate</title>
+      <ScrollToTop>
+        <GlobalStyle />
+        <Provider {...stores}>
           <Component {...pageProps} />
-        </Container>
-      </Provider>
+        </Provider>
+      </ScrollToTop>
     );
   }
 }
